@@ -2,13 +2,14 @@
 from re import match
 from time import sleep
 from rpi_ws281x import Color, PixelStrip, ws
+from copy import copy
 
 #
 # https://github.com/rpi-ws281x/rpi-ws281x-python/blob/f35d40a56c3a3ae854a6a601fecc9fa8bc92f5dc/examples/SK6812_strandtest.py#L47
 #
 
 # Variables
-defaultColour = [0,75,255]
+defaultColour = [255,255,255]
 
 isOn = False
 currentColour = {
@@ -37,6 +38,7 @@ strip.begin()
 
 # Private
 def __FindLargest(numbers):
+  print(f"numbers: {numbers}")
   largest = 0
   for i in range(len(numbers)):
     if largest == 0 or numbers[i] > largest:
@@ -80,24 +82,26 @@ def __ValidateRGB(toCheck):
 def __FadeColour(r,g,b,fadeTime=0.01):
 
   print(f"FADING TO: {r,g,b}")
-
   largest = 0
   largestNumber = __FindLargest([r,g,b])
   largestCurrent = __FindLargest(list(currentColour.values()))
+
+  initial = GetLEDColour()
+  internalR = initial["red"]
+  internalG = initial["green"]
+  internalB = initial["blue"]
 
   if largestCurrent > largestNumber:
     largest = largestCurrent
   else:
     largest = largestNumber
 
-  print(largest,fadeTime)
-
-  initial = GetLEDColour() 
-  internalR = initial["red"]
-  internalG = initial["green"]
-  internalB = initial["blue"]
+  currentColour["red"] = r
+  currentColour["green"] = g
+  currentColour["blue"]= b
 
   for i in range(largest):
+    #print(g < initial["green"],g,initial["green"])
     if r > initial["red"] and internalR < r:
       internalR+=1
     if r < initial["red"] and internalR > r:
@@ -113,17 +117,14 @@ def __FadeColour(r,g,b,fadeTime=0.01):
     if b < initial["blue"] and internalB > b:
       internalB-=1
 
-
     for x in range(strip.numPixels()): 
       strip.setPixelColor(x,Color(internalR,internalG,internalB))
 
     sleep(fadeTime)
     strip.show()
-  
-  ##
-  currentColour["red"] = r
-  currentColour["green"] = g
-  currentColour["blue"]= b
+
+
+
 
 def __SetColour(r,g,b):
   
@@ -158,16 +159,18 @@ def SetLEDColour(colour,fade=False,fadeTime=0.01):
 
 def DisableLEDs():
   global isOn
+  isOn = False
   print("TURNING ALL LEDS OFF")
   __FadeColour(0,0,0,0.001)
-  isOn = False
+
 
 
 def EnableLEDs():
   global isOn
+  isOn = True
   print("TURNING ALL LEDS ON ⚡")
   __FadeColour(defaultColour[0],defaultColour[1],defaultColour[2])
-  isOn = True
+
 
 
 def SetEffect(effect,otherArguments):
@@ -208,7 +211,7 @@ def GetLEDStatus():
 
 
 def GetLEDColour():
-  return currentColour
+  return copy(currentColour)
 
 
 def GetLEDEffect():
