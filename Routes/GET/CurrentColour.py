@@ -2,8 +2,8 @@ from WebServer import app
 from flask import jsonify
 from LedControl import GetLEDColour
 
-@app.get("/getCurrentColour/")
-def GetCurrentColour():
+@app.get("/currentColour/")
+def CurrentColour():
   currentColour = GetLEDColour()
 
   return jsonify(
