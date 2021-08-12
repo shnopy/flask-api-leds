@@ -19,9 +19,17 @@ def Run(args):
 
 
 help = {
-    "arguments": [
-      "speed (Float)",
-      "iterations (Int)"
-    ],
-    "description": "Testing effect"
-  }
+  "arguments": {
+    "speed": {
+      "type": "number",
+      "min": 0,
+      "max": 1
+    },
+    "iterations": {
+      "type": "number",
+      "min": 1,
+      "max": 50
+    }
+  },
+  "description": "Testing effect"
+}

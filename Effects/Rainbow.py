@@ -15,9 +15,17 @@ def Run(args):
 
 
 help = {
-  "arguments": [
-    "iterations (int)",
-    "fade_time (float)"
-  ],
+  "arguments": {
+    "iterations": {
+      "type": "number",
+      "min": 1,
+      "max": 100
+    },
+    "fade_time": {
+      "type": "number",
+      "min": 0,
+      "max": 0.5
+    }
+  },
   "description": "Rainbow fade effect"
 }

@@ -1,5 +1,4 @@
 # Imports
-from types import MethodType
 from flask import Flask,jsonify,request,url_for
 from flask_cors import CORS
 from os import walk,getcwd
