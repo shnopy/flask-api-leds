@@ -1,0 +1,12 @@
+#!/bin/bash
+
+declare -A HOSTS
+HOSTS[temp]='192.168.0.41:5000'
+HOSTS[leds]='192.168.0.41:5101'
+
+SENSOR='000006962d0f'
+
+declare -A WEATHER
+WEATHER[vHot]='255,0,0'
+WEATHER[normal]='165,184,108'
+WEATHER[vCold]='35,7,247'
