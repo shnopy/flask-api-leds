@@ -1,0 +1,12 @@
+#!/bin/bash
+
+. config
+
+ACTION='off'
+if [ $1 ]
+then
+  ACTION='on'
+fi
+
+resp=`curl -s -X POST ${HOSTS[leds]}/$ACTION/ | jq .response | tr -d '"'`
+echo $resp

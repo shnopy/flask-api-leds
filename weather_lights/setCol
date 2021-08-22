@@ -1,0 +1,7 @@
+#!/bin/bash
+# set LED colour
+
+. config
+
+resp=`curl -s -X POST ${HOSTS[leds]}/setColour/?colour=$1&fade=true`
+echo $resp 
