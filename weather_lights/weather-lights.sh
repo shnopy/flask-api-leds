@@ -2,7 +2,6 @@
 . config
 
 
-
 if [ `./sunset` -eq 1 ] && [ $HOUR -gt 15 ]
 then
     echo `date`: hour is $HOUR sunset is `./sunset` -  going in...
@@ -14,38 +13,22 @@ then
 
 
     TEMP=`curl -s ${HOSTS[temp]}/sensor/$SENSOR |jq .value`
-    echo `date`: temperature is $TEMP
-    if [ $TEMP -gt 20 ]
-    then
-        ./setCol ${WEATHER[vHot]}
-    else
-        if [ $TEMP -gt 10 ]
-        then
-            if [ $TEMP -gt 15 ]
-            then
-                ./setCol ${WEATHER[hot]}
-            else
-                ./setCol ${WEATHER[normal]}
-            fi
-        else
-            ./setCol ${WEATHER[vCold]}
-        fi
-    fi
+
+    case $TEMP in
+        2[0-9]) COL=vHot;;
+        1[5-9]) COL=hot;;
+        1[0-4]) COL=normal;;
+        [5-9]) COL=cold;;
+        *) COL=vCold;;
+    esac;
+    
+    echo `date`: temperature is $TEMP setting to $COL
+    ./setCol ${WEATHER[$COL]}
+
 
 else
-    if [ `./status` -eq 1 ]
-    then
-        echo `./onoff`
-    fi
+   if [ `./status` -eq 1 ]
+   then
+       echo `./onoff`
+   fi
 fi
-
-
-
-
-# LEDSTATUS=`./status`
-
-# echo $TEMP
-# echo $LEDSTATUS
-
-
-

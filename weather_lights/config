@@ -11,6 +11,7 @@ declare -A WEATHER
 WEATHER[vHot]='255,0,0'
 WEATHER[hot]='196,81,84'
 WEATHER[normal]='165,184,108'
+WEATHER[cold]='35,7,247'
 WEATHER[vCold]='35,7,247'
 
 declare -A LONGLAT
