@@ -1,8 +1,12 @@
 #!/bin/bash
 . config
 
-if [ `./sunset` ] && [ $HOUR -gt 15 ]
+
+
+if [ `./sunset` -eq 1 ] && [ $HOUR -gt 15 ]
 then
+    echo `date`: hour is $HOUR sunset is `./sunset` -  going in...
+
     if [ `./status` -eq 0 ]
     then
         echo `./onoff on`
@@ -10,13 +14,19 @@ then
 
 
     TEMP=`curl -s ${HOSTS[temp]}/sensor/$SENSOR |jq .value`
-    if [ $TEMP -gt 15 ]
+    echo `date`: temperature is $TEMP
+    if [ $TEMP -gt 20 ]
     then
         ./setCol ${WEATHER[vHot]}
     else
         if [ $TEMP -gt 10 ]
         then
-            ./setCol ${WEATHER[normal]}
+            if [ $TEMP -gt 15 ]
+            then
+                ./setCol ${WEATHER[hot]}
+            else
+                ./setCol ${WEATHER[normal]}
+            fi
         else
             ./setCol ${WEATHER[vCold]}
         fi
