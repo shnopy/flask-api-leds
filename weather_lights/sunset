@@ -5,7 +5,7 @@
 . config
 
 NOW=`date +%s`
-resp=`curl -s "https://api.sunrise-sunset.org/json?lat=${LONGLAT[lat]}&lng=${LONGLAT[long]}&formatted=0" |jq -r .results.sunset`
+resp=`curl -s -k "https://api.sunrise-sunset.org/json?lat=${LONGLAT[lat]}&lng=${LONGLAT[long]}&formatted=0" |jq -r .results.sunset`
 SUNSET=`date -d $resp +%s`
 
 if [ $NOW -gt $SUNSET ]
