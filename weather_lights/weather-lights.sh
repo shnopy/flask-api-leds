@@ -2,7 +2,7 @@
 . config
 
 
-if [ `./sunset` -eq 1 ] && [ $HOUR -gt 15 ]
+if [ `./sunset 20` -eq 1 ] && [ $HOUR -gt 15 ]
 then
     echo `date`: hour is $HOUR sunset is `./sunset` -  going in...
 

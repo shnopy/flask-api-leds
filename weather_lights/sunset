@@ -1,14 +1,24 @@
 #!/bin/bash
 # returns true if it is past sunset
-# TODO - add an offset argument
+# arg 1 is + offset in minutes
+
 
 . config
+if [ $1 ] 
+then
+   OFFSET=`expr $1 \* 60`
+else
+   OFFSET=0
+fi
 
 NOW=`date +%s`
 resp=`curl -s -k "https://api.sunrise-sunset.org/json?lat=${LONGLAT[lat]}&lng=${LONGLAT[long]}&formatted=0" |jq -r .results.sunset`
 SUNSET=`date -d $resp +%s`
 
-if [ $NOW -gt $SUNSET ]
+TRIGGER=`expr $SUNSET + $OFFSET`
+
+
+if [ $NOW -gt $TRIGGER ]
 then
     ret=1
 else

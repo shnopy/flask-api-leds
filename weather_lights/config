@@ -9,11 +9,11 @@ HOUR=`date +%H`
 
 declare -A WEATHER
 WEATHER[vHot]='255,0,0'
-WEATHER[hot]='196,81,84'
+WEATHER[hot]='199,55,25'
 WEATHER[normal]='165,184,108'
 WEATHER[cold]='35,7,247'
 WEATHER[vCold]='35,7,247'
 
 declare -A LONGLAT
 LONGLAT[lat]=50.832291
-LONGLAT[ong]=0.318620
+LONGLAT[long]=0.318620
