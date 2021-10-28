@@ -1,0 +1,15 @@
+[submodule "weather_lights/tests/test/bats"]
+	path = weather_lights/tests/test/bats
+	url = https://github.com/bats-core/bats-core.git
+[submodule "weather_lights/tests/test/test_helper/bats-support"]
+	path = weather_lights/tests/test/test_helper/bats-support
+	url = https://github.com/bats-core/bats-support.git
+[submodule "weather_lights/tests/test/test_helper/bats-assert"]
+	path = weather_lights/tests/test/test_helper/bats-assert
+	url = https://github.com/bats-core/bats-assert.git
+[submodule "weather_lights/tests/bats-support"]
+	path = weather_lights/tests/bats-support
+	url = https://github.com/bats-core/bats-support.git
+[submodule "weather_lights/tests/bats-assert"]
+	path = weather_lights/tests/bats-assert
+	url = https://github.com/bats-core/bats-assert.git
