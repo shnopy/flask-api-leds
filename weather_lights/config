@@ -3,6 +3,7 @@
 declare -A HOSTS
 HOSTS[temp]='192.168.0.41:5000'
 HOSTS[leds]='192.168.0.41:5101'
+HOSTS[sunset]='https://api.sunrise-sunset.org/json'
 
 SENSOR='000006962d0f'
 HOUR=`date +%H`
@@ -17,3 +18,28 @@ WEATHER[vCold]='35,7,247'
 declare -A LONGLAT
 LONGLAT[lat]=50.832291
 LONGLAT[long]=0.318620
+
+NOW=`date +%s`
+
+
+
+# TESTMODE sunset not met
+if [ -f TESTMODE1 ]; then
+    HOSTS[sunset]='localhost:4444'
+    NOW=1635525643
+    HOUR=16
+fi
+
+# TESTMODE sunset met and is the evening
+if [ -f TESTMODE2 ]; then
+    HOSTS[sunset]='localhost:4444'
+    NOW=1635527503
+    HOUR=16
+fi
+
+# TESTMODE sunset met and is in the early morning
+if [ -f TESTMODE3 ]; then
+    HOSTS[sunset]='localhost:4444'
+    NOW=1635527503
+    HOUR=1
+fi

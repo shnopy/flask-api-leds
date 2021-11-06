@@ -14,7 +14,7 @@ teardown() {
 
 
 
-@test "onoff_and_status: turn off while off" {
+@test "onoff_and_status 1: turn off while off" {
   run onoff
   assert_output 'LEDs off'
   run status
@@ -22,7 +22,7 @@ teardown() {
   [ "$status" -eq 0 ]
 }
 
-@test "onoff_and_status: turn on while off" {
+@test "onoff_and_status 2: turn on while off" {
   run onoff on
   assert_output 'LEDs on'
   run status
@@ -30,7 +30,8 @@ teardown() {
   [ "$status" -eq 1 ]
 }
 
-@test "onoff_and_status: turn on while on" {
+@test "onoff_and_status 3: turn on while on" {
+  onoff on
   run onoff on
   assert_output 'LEDs on'
   run status
@@ -38,7 +39,7 @@ teardown() {
   [ "$status" -eq 1 ]
 }
 
-@test "onoff_and_status: turn off while on" {
+@test "onoff_and_status 4: turn off while on" {
   run onoff 
   assert_output 'LEDs off'
   run status

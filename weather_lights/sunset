@@ -4,25 +4,30 @@
 
 
 . config
-if [ $1 ] 
+if [ $1 ]
 then
-   OFFSET=`expr $1 \* 60`
+    OFFSET=`expr $1 \* 60`
 else
-   OFFSET=0
+    OFFSET=0
 fi
 
-NOW=`date +%s`
-resp=`curl -s -k "https://api.sunrise-sunset.org/json?lat=${LONGLAT[lat]}&lng=${LONGLAT[long]}&formatted=0" |jq -r .results.sunset`
-SUNSET=`date -d $resp +%s`
-
-TRIGGER=`expr $SUNSET + $OFFSET`
-
-
-if [ $NOW -gt $TRIGGER ]
-then
-    ret=1
+resp=`curl -m2  -s -k "${HOSTS[sunset]}?lat=${LONGLAT[lat]}&lng=${LONGLAT[long]}&formatted=0" |jq -r .results.sunset`
+if [ $resp ]; then
+    SUNSET=`date -d $resp +%s`
+    TRIGGER=`expr $SUNSET + $OFFSET`
+    
+    # echo $NOW
+    # echo $TRIGGER
+    
+    if [ $NOW -gt $TRIGGER ]
+    then
+        ret=1
+    else
+        ret=0
+    fi
+    
 else
-    ret=0
+    ret=-1
 fi
 
 echo $ret
