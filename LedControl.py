@@ -1,5 +1,4 @@
 # Imports
-import queue
 from re import match
 from time import sleep
 from rpi_ws281x import Color, PixelStrip, ws
@@ -10,7 +9,7 @@ from copy import copy
 #
 
 # Variables
-defaultColour = [255, 127, 0]
+defaultColour = [255, 50, 100]
 
 isOn = False
 currentColour = {
@@ -51,9 +50,14 @@ def __FindLargest(numbers):
   return largest
 
 
+def __StripSpaces(value):
+  return value.strip()
+
+
 def __ValidateRGB(toCheck):
   if isOn:
     RGBArray = {}
+    toCheck = list(map(__StripSpaces, toCheck))
 
     if len(toCheck) < 3:
       return "RGB array does not include all three values!"
@@ -138,7 +142,7 @@ def __SetColour(r, g, b):
 # Public
 
 
-def SetLEDColour(colour, fade, fadeTime=0.01, override="false"):
+def SetLEDColour(colour, fade="false", fadeTime=0.01, override="false"):
   if currentEffect == "" or override.lower() == "true":
     RGB = __ValidateRGB(toCheck=colour)
 
