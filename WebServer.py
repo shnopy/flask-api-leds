@@ -1,11 +1,10 @@
 # Imports
-from flask import Flask,jsonify,request,url_for
+from flask import Flask, jsonify, request, url_for
 from flask_cors import CORS
-from os import walk,getcwd
+from os import walk, getcwd
 from sys import path
 
-import LedControl 
-import atexit
+import LedControl
 
 path.append("./Effects")
 path.append("./Functions")
@@ -13,15 +12,14 @@ path.append("./Functions")
 LedControl.DisableLEDs()
 
 # Variables
-app = Flask(__name__,static_folder=None)
+app = Flask(__name__, static_folder=None)
 cors = CORS(app, resources={"*": {"Access-Control-Allow-Origin": "0.0.0.0"}})
 
 # Imports paths from paths folder
 
-for dirPath,dirs,files in walk(f"./Routes/"):
+for dirPath, dirs, files in walk(f"./Routes/"):
   path.append(dirPath)
 
   for name in files:
     if name.endswith(".py"):
       __import__(name.split(".")[0])
-

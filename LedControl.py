@@ -1,4 +1,5 @@
 # Imports
+import queue
 from re import match
 from time import sleep
 from rpi_ws281x import Color, PixelStrip, ws
@@ -9,13 +10,13 @@ from copy import copy
 #
 
 # Variables
-defaultColour = [255,255,255]
+defaultColour = [255, 127, 0]
 
 isOn = False
 currentColour = {
-  "red": defaultColour[0],
-  "green": defaultColour[1],
-  "blue": defaultColour[2]
+    "red": defaultColour[0],
+    "green": defaultColour[1],
+    "blue": defaultColour[2],
 }
 currentEffect = ""
 currentEffectArguments = {}
@@ -23,22 +24,25 @@ currentEffectHelp = {}
 strip = None
 
 
-
 # LED Variables
 LED_COUNT = 30  # Number of LED pixels.
-LED_PIN = 12  # GPIO pin connected to the pixels (must support PWM!).
+LED_PIN = 13  # GPIO pin connected to the pixels (must support PWM!).
 LED_FREQ_HZ = 800000  # LED signal frequency in hertz (usually 800khz)
 LED_DMA = 10  # DMA channel to use for generating signal (try 10)
 LED_BRIGHTNESS = 255  # Set to 0 for darkest and 255 for brightest
-LED_INVERT = False  # True to invert the signal (when using NPN transistor level shift)
-LED_CHANNEL = 0
+# True to invert the signal (when using NPN transistor level shift)
+LED_INVERT = False
+LED_CHANNEL = 1
 
-strip = PixelStrip(LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL)
+strip = PixelStrip(
+    LED_COUNT, LED_PIN, LED_FREQ_HZ, LED_DMA, LED_INVERT, LED_BRIGHTNESS, LED_CHANNEL
+)
 strip.begin()
 
 # Private
+
+
 def __FindLargest(numbers):
-  print(f"numbers: {numbers}")
   largest = 0
   for i in range(len(numbers)):
     if largest == 0 or numbers[i] > largest:
@@ -54,8 +58,8 @@ def __ValidateRGB(toCheck):
     if len(toCheck) < 3:
       return "RGB array does not include all three values!"
     else:
-      for index,value in enumerate(toCheck):
-        if match(r"-?\d",str(value)) is not None:
+      for index, value in enumerate(toCheck):
+        if match(r"-?\d", str(value)) is not None:
           valueAsInt = int(value)
 
           if valueAsInt > 255:
@@ -67,23 +71,16 @@ def __ValidateRGB(toCheck):
         else:
           return f"Given value {value} is not a valid number!"
 
-      rgb = {
-        "red": RGBArray[0],
-        "green": RGBArray[1],
-        "blue": RGBArray[2]
-      }
+      rgb = {"red": RGBArray[0], "green": RGBArray[1], "blue": RGBArray[2]}
 
       return rgb
   else:
     return "LEDs are not currently on!"
 
 
-
-def __FadeColour(r,g,b,fadeTime=0.01):
-
-  print(f"FADING TO: {r,g,b}")
+def __FadeColour(r, g, b, fadeTime=0.01):
   largest = 0
-  largestNumber = __FindLargest([r,g,b])
+  largestNumber = __FindLargest([r, g, b])
   largestCurrent = __FindLargest(list(currentColour.values()))
 
   initial = GetLEDColour()
@@ -98,94 +95,95 @@ def __FadeColour(r,g,b,fadeTime=0.01):
 
   currentColour["red"] = r
   currentColour["green"] = g
-  currentColour["blue"]= b
+  currentColour["blue"] = b
 
   for i in range(largest):
-    #print(g < initial["green"],g,initial["green"])
+    # print(g < initial["green"],g,initial["green"])
     if r > initial["red"] and internalR < r:
-      internalR+=1
+      internalR += 1
     if r < initial["red"] and internalR > r:
-      internalR-=1
+      internalR -= 1
 
     if g > initial["green"] and internalG < g:
-      internalG+=1
+      internalG += 1
     if g < initial["green"] and internalG > g:
-      internalG-=1
+      internalG -= 1
 
     if b > initial["blue"] and internalB < b:
-      internalB+=1
+      internalB += 1
     if b < initial["blue"] and internalB > b:
-      internalB-=1
+      internalB -= 1
 
-    for x in range(strip.numPixels()): 
-      strip.setPixelColor(x,Color(internalR,internalG,internalB))
+    for x in range(strip.numPixels()):
+      strip.setPixelColor(x, Color(internalR, internalG, internalB))
 
     sleep(fadeTime)
     strip.show()
 
 
+def __SetColour(r, g, b):
 
-
-def __SetColour(r,g,b):
-  
   print(f"SETTING COLOUR TO: {r,g,b}")
 
   currentColour["red"] = r
   currentColour["green"] = g
-  currentColour["blue"]= b
+  currentColour["blue"] = b
 
   for i in range(strip.numPixels()):
-    strip.setPixelColor(i,Color(r,g,b))
-        
+    strip.setPixelColor(i, Color(r, g, b))
+
   strip.show()
 
 
 # Public
 
-def SetLEDColour(colour,fade=False,fadeTime=0.01):
-  RGB = __ValidateRGB(toCheck=colour)
-  fade = str(fade).lower()  
-  
-  if len(RGB) == 3:
-    if fade == "true":
-      __FadeColour(RGB["red"],RGB["green"],RGB["blue"],fadeTime)
-    else:
-      __SetColour(RGB["red"],RGB["green"],RGB["blue"])
 
-    return RGB
-  else:
-    return "LEDs are not currently on or an invalid RGB value was provided!"
+def SetLEDColour(colour, fade, fadeTime=0.01, override="false"):
+  if currentEffect == "" or override.lower() == "true":
+    RGB = __ValidateRGB(toCheck=colour)
+
+    if len(RGB) == 3:
+      if fade == "true":
+        __FadeColour(RGB["red"], RGB["green"], RGB["blue"], fadeTime)
+      else:
+        __SetColour(RGB["red"], RGB["green"], RGB["blue"])
+
+      return RGB
 
 
 def DisableLEDs():
-  global isOn
-  isOn = False
-  print("TURNING ALL LEDS OFF")
-  __FadeColour(0,0,0,0.001)
+  if currentEffect == "":
+    global isOn
 
+    isOn = False
+    print("TURNING ALL LEDS OFF")
+    __FadeColour(0, 0, 0, 0.001)
+  else:
+    print("Effect running, can not turn off LEDs")
 
 
 def EnableLEDs():
-  global isOn
-  isOn = True
-  print("TURNING ALL LEDS ON ⚡")
-  __FadeColour(defaultColour[0],defaultColour[1],defaultColour[2])
+  if currentEffect == "":
+    global isOn
+    isOn = True
+    print("TURNING ALL LEDS ON")
+    __FadeColour(defaultColour[0], defaultColour[1], defaultColour[2])
+  else:
+    print("Effect running, can not turn LEDs on")
 
 
-
-def SetEffect(effect,otherArguments):
-  global currentEffect,currentEffectArguments,currentEffectHelp
-
-  if isOn:
-    effectModule = __import__(effect,otherArguments)
+def SetEffect(effect, otherArguments):
+  global currentEffect, currentEffectArguments, currentEffectHelp
+  if isOn and currentEffect == "":
+    effectModule = __import__(effect, otherArguments)
 
     if hasattr(effectModule, "Run"):
-      __SetColour(0,0,0)
+      __SetColour(0, 0, 0)
 
       currentEffect = effect
       currentEffectArguments = otherArguments
 
-      if hasattr(effectModule,"help"):
+      if hasattr(effectModule, "help"):
         currentEffectHelp = effectModule.help
       else:
         currentEffectHelp = "No help provided for effect"
@@ -196,8 +194,8 @@ def SetEffect(effect,otherArguments):
       currentEffect = ""
       currentEffectArguments = {}
       currentEffectHelp = {}
-      
-      __FadeColour(defaultColour[0],defaultColour[1],defaultColour[2])
+
+      __FadeColour(defaultColour[0], defaultColour[1], defaultColour[2])
 
       return f"Effect {effect} completed successfully!"
     else:
@@ -215,4 +213,11 @@ def GetLEDColour():
 
 
 def GetLEDEffect():
-  return [currentEffect,currentEffectArguments,currentEffectHelp]
+  return [currentEffect, currentEffectArguments, currentEffectHelp]
+
+
+def ResetCurrentEffect():
+  global currentEffect, currentEffectArguments, currentEffectHelp
+  currentEffect = ""
+  currentEffectArguments = {}
+  currentEffectHelp = {}
