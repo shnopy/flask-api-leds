@@ -15,3 +15,11 @@ def GetArgumentAsNumber(arguments,key,default):
     return float(arguments[key])
   else:
     return default
+
+def GetArgumentAsBool(arguments,key,default):
+  if not key in arguments:
+    return default
+  elif key in arguments and (arguments[key].lower() == "false" or arguments[key].lower() == "true"):
+    return arguments[key].lower()
+  else:
+    return default

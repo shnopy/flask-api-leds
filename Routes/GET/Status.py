@@ -1,6 +1,7 @@
 from WebServer import app
 from flask import jsonify
-from LedControl import GetLEDStatus,GetLEDColour,GetLEDEffect
+from LedControl import GetLEDStatus, GetLEDColour, GetLEDEffect
+
 
 @app.get("/status/")
 def GetStatus():
@@ -8,14 +9,14 @@ def GetStatus():
   currentColour = GetLEDColour()
   currentEffect = GetLEDEffect()
 
-  print(currentEffect)
+  # print(currentEffect)
 
   return jsonify(
-    colour=currentColour,
-    effect={
-      "effectName": currentEffect[0],
-      "effectArguments": currentEffect[1],
-      "effectHelp": currentEffect[2]
-    },
-    status=("Off","On")[LEDStatus]
+      colour=currentColour,
+      effect={
+          "effectName": currentEffect[0],
+          "effectArguments": currentEffect[1],
+          "effectHelp": currentEffect[2],
+      },
+      status=("Off", "On")[LEDStatus],
   )

@@ -1,15 +1,22 @@
+import threading
+
 from WebServer import app
-from flask import jsonify,request
+from flask import jsonify, request
 from LedControl import SetLEDColour
 
-from GetArguments import GetArgumentAsNumber
+from GetArguments import GetArgumentAsNumber, GetArgumentAsBool
 
-@app.post('/setColour/')
+
+@app.post("/setColour/")
 def setColour():
   colour = request.args.get("colour").split(",")
-  fadeTime = GetArgumentAsNumber(request.args,"fadeTime",0.01)
-  setResponse = SetLEDColour(colour,request.args.get("fade") or False,fadeTime)
+
+  fade = GetArgumentAsBool(request.args, "fade", "false")
+  fadeTime = GetArgumentAsNumber(request.args, "fadeTime", 0.01)
+
+  threading.Thread(target=SetLEDColour, args=(colour, fade, fadeTime)).start()
 
   return jsonify(
-    response=setResponse
+      response=f"Attempting to set LED colour",
+      args={"colour": colour, "fade": fade, "fadeTime": fadeTime},
   )
