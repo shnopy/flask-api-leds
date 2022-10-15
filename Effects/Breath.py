@@ -1,8 +1,8 @@
-from LedControl import SetLEDColour
+from LedControl import SetLEDColour, defaultColour
 from time import sleep
-from random import randint
+from random import randint, uniform
 
-from GetArguments import GetArgumentAsNumber
+from GetArguments import GetArgumentAsRGB, GetArgumentAsNumber
 
 shouldLoop = True
 
@@ -11,20 +11,23 @@ def Run(args):
   global shouldLoop
   shouldLoop = True
 
-  iterations = GetArgumentAsNumber(args, "iterations", 1)
+  colour = GetArgumentAsRGB(args, "colour", defaultColour)
   fadeTime = GetArgumentAsNumber(args, "fade_time", 0.01)
 
-  for _ in range(int(iterations)):
+  while True:
     if shouldLoop:
-      colour = [randint(0, 255), randint(0, 255), randint(0, 255)]
       SetLEDColour(colour, "true", fadeTime, "true")
+
+      sleep(fadeTime)
+
+      SetLEDColour([0, 0, 0], "true", fadeTime, "true")
 
       sleep(fadeTime)
     else:
       break
 
-# Don't touch this function
 
+# Don't touch this function
 
 def Stop():
   global shouldLoop
@@ -33,8 +36,8 @@ def Stop():
 
 help = {
     "arguments": {
-        "iterations": {"type": "number", "min": 1, "max": 100},
+        "colour": {"type": "text"},
         "fade_time": {"type": "number", "min": 0, "max": 0.1},
     },
-    "description": "Rainbow fade effect",
+    "description": "A breathing effect",
 }

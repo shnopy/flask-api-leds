@@ -1,3 +1,4 @@
+from time import sleep
 from WebServer import app
 from flask import jsonify
 from LedControl import GetLEDEffect, ResetCurrentEffect, SetLEDColour, defaultColour
@@ -18,6 +19,7 @@ def stopEffect():
     if hasattr(importedEffect, "Stop"):
       importedEffect.Stop()
 
+      sleep(1)
       SetLEDColour(defaultColour, fade="true", override="true")
       ResetCurrentEffect()
 

@@ -51,35 +51,7 @@ def __FindLargest(numbers):
 
 
 def __StripSpaces(value):
-  return value.strip()
-
-
-def __ValidateRGB(toCheck):
-  if isOn:
-    RGBArray = {}
-    toCheck = list(map(__StripSpaces, toCheck))
-
-    if len(toCheck) < 3:
-      return "RGB array does not include all three values!"
-    else:
-      for index, value in enumerate(toCheck):
-        if match(r"-?\d", str(value)) is not None:
-          valueAsInt = int(value)
-
-          if valueAsInt > 255:
-            RGBArray[index] = 255
-          elif valueAsInt < 0:
-            RGBArray[index] = 0
-          else:
-            RGBArray[index] = valueAsInt
-        else:
-          return f"Given value {value} is not a valid number!"
-
-      rgb = {"red": RGBArray[0], "green": RGBArray[1], "blue": RGBArray[2]}
-
-      return rgb
-  else:
-    return "LEDs are not currently on!"
+  return str(value).strip()
 
 
 def __FadeColour(r, g, b, fadeTime=0.01):
@@ -91,7 +63,6 @@ def __FadeColour(r, g, b, fadeTime=0.01):
   internalR = initial["red"]
   internalG = initial["green"]
   internalB = initial["blue"]
-
   if largestCurrent > largestNumber:
     largest = largestCurrent
   else:
@@ -101,8 +72,7 @@ def __FadeColour(r, g, b, fadeTime=0.01):
   currentColour["green"] = g
   currentColour["blue"] = b
 
-  for i in range(largest):
-    # print(g < initial["green"],g,initial["green"])
+  for _ in range(largest):
     if r > initial["red"] and internalR < r:
       internalR += 1
     if r < initial["red"] and internalR > r:
@@ -141,10 +111,37 @@ def __SetColour(r, g, b):
 
 # Public
 
+def ValidateRGB(toCheck):
+  if isOn:
+    RGBArray = {}
+    toCheck = list(map(__StripSpaces, toCheck))
+
+    if len(toCheck) < 3:
+      return "RGB array does not include all three values!"
+    else:
+      for index, value in enumerate(toCheck):
+        if match(r"-?\d", str(value)) is not None:
+          valueAsInt = int(value)
+
+          if valueAsInt > 255:
+            RGBArray[index] = 255
+          elif valueAsInt < 0:
+            RGBArray[index] = 0
+          else:
+            RGBArray[index] = valueAsInt
+        else:
+          return f"Given value {value} is not a valid number!"
+
+      rgb = {"red": RGBArray[0], "green": RGBArray[1], "blue": RGBArray[2]}
+
+      return rgb
+  else:
+    return "LEDs are not currently on!"
+
 
 def SetLEDColour(colour, fade="false", fadeTime=0.01, override="false"):
   if currentEffect == "" or override.lower() == "true":
-    RGB = __ValidateRGB(toCheck=colour)
+    RGB = ValidateRGB(toCheck=colour)
 
     if len(RGB) == 3:
       if fade == "true":
@@ -171,7 +168,7 @@ def EnableLEDs():
     global isOn
     isOn = True
     print("TURNING ALL LEDS ON")
-    __FadeColour(defaultColour[0], defaultColour[1], defaultColour[2])
+    __FadeColour(defaultColour[0], defaultColour[1], defaultColour[2], 0.001)
   else:
     print("Effect running, can not turn LEDs on")
 

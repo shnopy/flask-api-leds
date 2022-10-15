@@ -1,11 +1,12 @@
 from WebServer import app
-from flask import url_for,jsonify
+from flask import url_for, jsonify
+
 
 @app.get("/")
 def index():
   routes = {
-    "POST": [],
-    "GET": [],
+      "POST": [],
+      "GET": [],
   }
 
   for rule in app.url_map.iter_rules():
@@ -14,5 +15,5 @@ def index():
         routes[method].append(url_for(rule.endpoint))
 
   return jsonify(
-    routes
+      routes
   )
